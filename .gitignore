@@ -1,0 +1,24 @@
+## OS generated files #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+
+## xcode specific
+*xcuserdata*
+
+## Generated project output
+proj/
+
+## VS Code
+.vscode
+
+## binaries
+bin/
+!bin/Fonts
+!bin/texture_01.png
