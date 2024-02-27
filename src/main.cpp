@@ -123,7 +123,7 @@ int main(int argv, char* args[]) {
     const Mesh defaultQuad = Mesh::DefaultQuad();
     DrawData::Default.vao = UploadMesh(defaultQuad);
     DrawData::Default.vertCount = defaultQuad.vertexData.size();
-    DrawData::Default.texture = LoadTexture(DATA_PATH "Tiles/grass1.png");
+    DrawData::Default.texture = LoadTexture(DATA_PATH "Sprites/player.png");
     DrawData::Default.program = LoadProgram(DATA_PATH "Shaders/vert.glsl", DATA_PATH "Shaders/frag.glsl");
 
     // Run lua setup
