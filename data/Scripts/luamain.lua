@@ -2,7 +2,7 @@ require "map"
 
 player_speed = 10
 player = create_entity()
-set_texture(player, gfx.load_texture("Tiles/grass1.png"))
+set_texture(player, gfx.load_texture("Sprites/player.png"))
 gfx.add_to_drawlist(player)
 
 -- create_map()
@@ -27,4 +27,3 @@ function update(dt)
     pos.y = pos.y + input_dir.y * player_speed * dt
     set_pos(player, pos)
 end
- 
