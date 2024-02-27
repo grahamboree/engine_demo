@@ -92,7 +92,7 @@ void UIState::UpdateAndRender(const RendererState& renderer, const Stats& stats,
                 avgRenderTime /= Stats::FRAME_TIME_HISTORY_SIZE;
 
                 char avgLabel[128];
-                sprintf_s(avgLabel, "avg f:%.2f u:%.2f r:%.2f", avgFrameTime, avgUpdateTime, avgRenderTime);
+                sprintf(avgLabel, "avg f:%.2f u:%.2f r:%.2f", avgFrameTime, avgUpdateTime, avgRenderTime);
 
                 float maxY = std::max<float>(maxFrameTime, 16);
 
