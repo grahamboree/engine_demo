@@ -1,0 +1,103 @@
+name: Build
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  macOS:
+    strategy:
+      matrix:
+        conf:
+          - Debug
+          - Release
+
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Download & install premake
+      run: |
+        curl -L -o premake.tar.gz https://github.com/premake/premake-core/releases/download/v5.0.0-beta2/premake-5.0.0-beta2-macosx.tar.gz
+        tar -xzf premake.tar.gz
+        rm premake.tar.gz
+
+    - name: Run premake
+      run: ./premake5 xcode4
+
+    - name: Build With Xcode
+      working-directory: proj/
+      run: xcodebuild -scheme engine -configuration ${{matrix.conf}} -project engine.xcodeproj build
+  
+  linux:
+    strategy:
+      matrix:
+        conf:
+          - debug
+          - release
+        compiler:
+          - clang
+          - gcc
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install opengl and SDL
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgl1-mesa-dev libsdl2-dev
+
+    - name: Download & Install premake
+      run: |
+        curl -L -o premake.tar.gz https://github.com/premake/premake-core/releases/download/v5.0.0-beta2/premake-5.0.0-beta2-linux.tar.gz
+        tar -xzf premake.tar.gz
+        rm premake.tar.gz
+    
+    - name: Run premake
+      run: ./premake5 --cc=${{matrix.compiler}} gmake2
+    
+    - name: Build
+      working-directory: proj/
+      run: make config=${{matrix.conf}} verbose=true
+
+  windows:
+    strategy:
+      matrix:
+        conf:
+          - Debug
+          - Release
+        vs-version:
+          - vs2022
+        include:
+          - vs-version: vs2022
+            version-range: '17.0'
+            runner: windows-2022
+
+    runs-on: ${{matrix.runner}}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+        vs-version: ${{matrix.version-range}}
+
+    - name: Download and Install Premake
+      shell: pwsh
+      run: |
+        (new-object System.Net.WebClient).DownloadFile("https://github.com/premake/premake-core/releases/download/v5.0.0-beta2/premake-5.0.0-beta2-windows.zip","${{github.workspace}}/premake.zip")
+        tar -xf premake.zip
+        del premake.zip
+
+    - name: Run Premake
+      run: ./premake5.exe ${{matrix.vs-version}}
+
+    - name: Build
+      working-directory: proj/
+      run: msbuild engine.vcxproj -property:Configuration=${{matrix.conf}}
