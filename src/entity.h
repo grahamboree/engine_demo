@@ -17,27 +17,27 @@ struct DrawData {
 
 struct EntityState
 {
-	static constexpr size_t MAX_ENTITY_COUNT = 4096;
+	static constexpr size_t MAX_ENTITY_COUNT = 32768;
 
 	// Runtime data
-	std::vector<EntityID> drawList;	
+	std::vector<EntityID> drawList;
 	
 	// Transform
-	std::array<EntityID, MAX_ENTITY_COUNT> parent {}; // Hierarchy
-	std::array<glm::vec3, MAX_ENTITY_COUNT> positions {};
-	std::array<float, MAX_ENTITY_COUNT> rotations {};
-	std::array<glm::vec2, MAX_ENTITY_COUNT> scales {};
-	std::array<glm::vec2, MAX_ENTITY_COUNT> pivots {};
+	std::array<EntityID, MAX_ENTITY_COUNT> parent; // Hierarchy
+	std::array<glm::vec3, MAX_ENTITY_COUNT> positions;
+	std::array<float, MAX_ENTITY_COUNT> rotations;
+	std::array<glm::vec2, MAX_ENTITY_COUNT> scales;
+	std::array<glm::vec2, MAX_ENTITY_COUNT> pivots;
 
 	// Rendering
-	std::array<DrawData, MAX_ENTITY_COUNT> drawInfo {};
-	std::array<glm::mat4, MAX_ENTITY_COUNT> MVPMatrix {};
-	std::array<glm::mat4, MAX_ENTITY_COUNT> localTransform {};
+	std::array<DrawData, MAX_ENTITY_COUNT> drawInfo;
+
+	// Per-frame render state
+	std::array<glm::mat4, MAX_ENTITY_COUNT> MVPMatrix;
+	std::array<glm::mat4, MAX_ENTITY_COUNT> localTransform;
 
 	EntityState();
-	
 	EntityID CreateEntity();
-
 	void UpdateLocalTransformMatrix(EntityID entity);
 	void UpdateMvpMatrix(EntityID entity, const glm::mat4& viewProjection);
 };

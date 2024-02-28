@@ -14,5 +14,5 @@ struct Camera {
     glm::mat4 projectionMatrix;
 
     void SetOrtho(float width);
-    glm::mat4 CalculateViewProjectionMatrix();
+    glm::mat4 CalculateViewMatrix();
 };

@@ -1,13 +1,10 @@
 #pragma once
 
 #include <chrono>
-#include <vector>
 
 #include "core.h"
-
 #include "rendering/camera.h"
 #include "rendering/gfx.h"
-#include "rendering/mesh.h"
 #include "entity.h"
 #include "input.h"
 #include "lua_api.h"
@@ -31,9 +28,8 @@ struct EngineState {
     EntityState entities;
     UIState ui;
 
-    // Returns true if we should exit.
-    bool UpdateAndRender();
     void Init();
+    bool UpdateAndRender(); // Returns true if we should exit.
     void Shutdown();
 };
 

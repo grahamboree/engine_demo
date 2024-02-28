@@ -1,5 +1,7 @@
 #include "engine.h"
 
+#include "rendering/mesh.h"
+
 bool EngineState::UpdateAndRender()
 {
     // calculate dt
@@ -19,20 +21,15 @@ bool EngineState::UpdateAndRender()
                 event.window.windowID == renderer.mainWindowID;
     }
 
-    glm::mat4 viewProjection = camera.CalculateViewProjectionMatrix();
+    glm::mat4 viewProjection = camera.projectionMatrix * camera.CalculateViewMatrix();
     
     // Update
     {
         input.readInput();
-
-        float dt_seconds = std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime).count();
-
-        // Camera controls
-        // camera.move(dt_seconds, input, renderer.window, windowHeight);
-
+        
         // Call lua update, passing the delta time in seconds.
         lua_getglobal(luaState, "update");
-        lua_pushnumber(luaState, dt_seconds);
+        lua_pushnumber(luaState, std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime).count());
         lua_check(lua_pcall(luaState, 1, 0, 0));
 
         // Compute MVP matricesv

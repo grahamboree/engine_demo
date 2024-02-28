@@ -8,7 +8,6 @@ void Camera::SetOrtho(float width) {
     projectionMatrix = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, nearPlane, farPlane);
 }
 
-glm::mat4 Camera::CalculateViewProjectionMatrix() {
-    glm::mat4 viewMatrix = glm::eulerAngleXY(euler.x, euler.y) * glm::translate(glm::mat4(1.0f), -pos);
-    return projectionMatrix * viewMatrix;
+glm::mat4 Camera::CalculateViewMatrix() {
+    return glm::eulerAngleXY(euler.x, euler.y) * glm::translate(glm::mat4(1.0f), -pos);
 }
