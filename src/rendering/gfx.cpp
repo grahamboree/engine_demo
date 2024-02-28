@@ -108,19 +108,19 @@ uint32_t UploadMesh(const Mesh& mesh) {
     glBufferData(GL_ARRAY_BUFFER, mesh.vertexData.size() * stride, mesh.vertexData.data(), GL_STATIC_DRAW);
 
     // position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(stride), nullptr);
     glEnableVertexAttribArray(0);
 
     // uv
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(long)posDataSize);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(stride), (void*)(long)posDataSize);
     glEnableVertexAttribArray(1);
 
     // normal
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void*)(long)(posDataSize + uvDataSize));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(stride), (void*)(long)(posDataSize + uvDataSize));
     glEnableVertexAttribArray(2);
 
     // color
-    glVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, GL_TRUE, stride, (void*)(long)(posDataSize + uvDataSize + normDataSize));
+    glVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, GL_TRUE, static_cast<GLsizei>(stride), (void*)(long)(posDataSize + uvDataSize + normDataSize));
     glEnableVertexAttribArray(3);
 
     return vao;

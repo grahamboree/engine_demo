@@ -21,7 +21,7 @@ char* IO::ReadFile(const char* path) {
         return nullptr;
     }
 
-    const int bufSize = ftell(vert);
+    const auto bufSize = ftell(vert);
     if (bufSize < 0) {
         fclose(vert);
         return nullptr;
