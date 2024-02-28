@@ -12,4 +12,3 @@ enum class LogCategory {
 };
 
 void log(LogCategory category, const char* format, ...);
-void log_perf_counter(uint64_t start, uint64_t end, const char* name);

@@ -36,11 +36,3 @@ void log(LogCategory category, const char* format, ...) {
 
     consoleScrollback.emplace_back(buff);
 }
-
-void log_perf_counter(uint64_t startTick, uint64_t endTick, const char* name) {
-    const uint64_t ticksPerSecond = SDL_GetPerformanceFrequency();
-    const uint64_t duration = endTick - startTick;
-    const float deltaT = static_cast<float>(duration) / ticksPerSecond;
-    const float deltaMS = 1000 * deltaT;
-    log(LogCategory::PERF, "%.2fms %s", deltaMS, name);
-}
