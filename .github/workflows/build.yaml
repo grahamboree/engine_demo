@@ -28,6 +28,10 @@ jobs:
     - name: Run premake
       run: ./premake5 xcode4
 
+    - name: Build Third Party Code
+      working-directory: proj/
+      run: xcodebuild -configuration ${{matrix.conf}} -project lib.xcodeproj
+
     - name: Build With Xcode
       working-directory: proj/
       run: xcodebuild -scheme engine -configuration ${{matrix.conf}} -workspace engine.xcworkspace build
