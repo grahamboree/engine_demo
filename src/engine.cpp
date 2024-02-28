@@ -61,7 +61,7 @@ bool EngineState::UpdateAndRender()
             glDrawArrays(GL_TRIANGLES, 0, drawData.vertCount); glCheckErrors();
         }
 
-        ui.UpdateAndRender(renderer, stats, camera);
+        ui.UpdateAndRender(*this);
     }
     SDL_GL_SwapWindow(renderer.window);
 

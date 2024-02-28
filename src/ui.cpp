@@ -3,7 +3,7 @@
 #include "util/stats.h"
 #include "core.h"
 #include "rendering/gfx.h"
-#include "rendering/camera.h"
+#include "engine.h"
 
 void UIState::Init(const Renderer& renderer) {
     // Setup Dear ImGui context
@@ -35,9 +35,9 @@ void UIState::Init(const Renderer& renderer) {
     ImGui_ImplOpenGL3_Init("#version 150");
 }
 
-void UIState::UpdateAndRender(const Renderer& renderer, const Stats& stats, const Camera& camera) {
+void UIState::UpdateAndRender(const EngineState& engine) {
     ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplSDL2_NewFrame(renderer.window);
+    ImGui_ImplSDL2_NewFrame(engine.renderer.window);
     ImGui::NewFrame();
 
     // stats window
@@ -51,15 +51,16 @@ void UIState::UpdateAndRender(const Renderer& renderer, const Stats& stats, cons
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4{ 0.3f, 0.3f, 0.32f, 0.4f });
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4{ 0.3f, 0.3f, 0.32f, 0.0f });
 
-        ImGui::Begin("Stats", &showStatsWindow, ImGuiWindowFlags_NoDocking |
-                                                ImGuiWindowFlags_NoTitleBar |
-                                                ImGuiWindowFlags_NoCollapse |
-                                                ImGuiWindowFlags_NoResize |
-                                                ImGuiWindowFlags_NoMove |
-                                                ImGuiWindowFlags_NoBringToFrontOnFocus |
-                                                ImGuiWindowFlags_NoNavFocus);
+        ImGuiWindowFlags StatsWindowFlags = ImGuiWindowFlags_NoDocking |
+            ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoBringToFrontOnFocus |
+            ImGuiWindowFlags_NoNavFocus;
+        ImGui::Begin("Stats", &showStatsWindow, StatsWindowFlags);
         {
             ImGui::PopStyleVar(3); // Window rounding, window border size, window padding
             ImGui::PopStyleColor(1); // Window background color
@@ -75,9 +76,9 @@ void UIState::UpdateAndRender(const Renderer& renderer, const Stats& stats, cons
                 float maxFrameTime = 0;
 
                 for (int i = 0; i < Stats::FRAME_TIME_HISTORY_SIZE; ++i) {
-                    const float frameTime = stats.frameTimesMillis[i];
-                    const float updateTime = stats.updateTimesMillis[i];
-                    const float renderTime = stats.renderTimesMillis[i];
+                    const float frameTime = engine.stats.frameTimesMillis[i];
+                    const float updateTime = engine.stats.updateTimesMillis[i];
+                    const float renderTime = engine.stats.renderTimesMillis[i];
 
                     avgFrameTime += frameTime;
                     avgUpdateTime += updateTime;
@@ -103,26 +104,25 @@ void UIState::UpdateAndRender(const Renderer& renderer, const Stats& stats, cons
                 static constexpr ImPlotAxisFlags Y_AXIS_FLAGS = ImPlotAxisFlags_Lock;
                 if (ImPlot::BeginPlot("##FrameTimes", avgLabel, "Frame Time (ms)", ImVec2(-1, 150), 0, X_AXIS_FLAGS, Y_AXIS_FLAGS)) {
                     ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
-                    ImPlot::PlotShaded("frame", stats.frameTimesMillis, Stats::FRAME_TIME_HISTORY_SIZE);
-                    ImPlot::PlotShaded("update", stats.updateTimesMillis, Stats::FRAME_TIME_HISTORY_SIZE);
-                    ImPlot::PlotShaded("render", stats.renderTimesMillis, Stats::FRAME_TIME_HISTORY_SIZE);
+                    ImPlot::PlotShaded("frame", engine.stats.frameTimesMillis, Stats::FRAME_TIME_HISTORY_SIZE);
+                    ImPlot::PlotShaded("update", engine.stats.updateTimesMillis, Stats::FRAME_TIME_HISTORY_SIZE);
+                    ImPlot::PlotShaded("render", engine.stats.renderTimesMillis, Stats::FRAME_TIME_HISTORY_SIZE);
                     ImPlot::PopStyleVar();
 
-                    ImPlot::PlotLine("frame", stats.frameTimesMillis, Stats::FRAME_TIME_HISTORY_SIZE);
-                    ImPlot::PlotLine("update", stats.updateTimesMillis, Stats::FRAME_TIME_HISTORY_SIZE);
-                    ImPlot::PlotLine("render", stats.renderTimesMillis, Stats::FRAME_TIME_HISTORY_SIZE);
+                    ImPlot::PlotLine("frame", engine.stats.frameTimesMillis, Stats::FRAME_TIME_HISTORY_SIZE);
+                    ImPlot::PlotLine("update", engine.stats.updateTimesMillis, Stats::FRAME_TIME_HISTORY_SIZE);
+                    ImPlot::PlotLine("render", engine.stats.renderTimesMillis, Stats::FRAME_TIME_HISTORY_SIZE);
 
                 }
                 ImPlot::EndPlot();
                 ImPlot::PopStyleColor(1);
             }
 
-            ImGui::Text("Camera");
-            ImGui::Indent();
-            ImGui::Text("pos: x%.2f y%.2f z%.2f", camera.pos.x, camera.pos.y, camera.pos.z);
-            ImGui::Text("rot: x%.2f y%.2f", camera.euler.x, camera.euler.y);
-            ImGui::Unindent();
-
+           ImGui::Text("Camera");
+           ImGui::Indent();
+           ImGui::Text("pos: x%.2f y%.2f z%.2f", engine.camera.pos.x, engine.camera.pos.y, engine.camera.pos.z);
+           ImGui::Text("rot: x%.2f y%.2f", engine.camera.euler.x, engine.camera.euler.y);
+           ImGui::Unindent();
         }
         ImGui::End();
     }

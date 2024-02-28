@@ -1,7 +1,6 @@
 #pragma once
 
-struct Camera;
-struct Stats;
+struct EngineState;
 struct Renderer;
 
 struct UIState
@@ -11,5 +10,5 @@ struct UIState
     bool showImguiDemoWindow = false;
 
     void Init(const Renderer& renderer);
-    void UpdateAndRender(const Renderer& renderer, const Stats& stats, const Camera& camera);
+    void UpdateAndRender(const EngineState& engine);
 };
