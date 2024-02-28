@@ -17,7 +17,7 @@ struct DrawData {
 
 struct EntityState
 {
-	static constexpr size_t MAX_ENTITY_COUNT = 2048;
+	static constexpr size_t MAX_ENTITY_COUNT = 4096;
 
 	// Runtime data
 	std::vector<EntityID> drawList;	
