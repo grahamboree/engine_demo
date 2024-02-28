@@ -1,4 +1,5 @@
 # Simple 2D Game Engine
+[![Build](https://github.com/grahamboree/engine_demo/actions/workflows/build.yaml/badge.svg)](https://github.com/grahamboree/engine_demo/actions/workflows/build.yaml)
 
 A simple game engine using SDL2, Lua, and DearImGUI.  Created as a demo project for the Boston Game Dev "Under the Hood: A Whirlwind Tour of Game Engine Possibilities" event.
 
