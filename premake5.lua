@@ -24,7 +24,7 @@ project "lib"
 
 project "engine"
 	language "C++"
-	cppdialect "C++11"
+	cppdialect "C++20"
 	kind "WindowedApp"
 	targetdir "bin"
 	architecture "x64"
