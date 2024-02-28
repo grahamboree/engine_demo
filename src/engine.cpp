@@ -25,7 +25,7 @@ bool EngineState::UpdateAndRender()
     
     // Update
     {
-        input.readInput();
+        input.ReadInput();
         
         // Call lua update, passing the delta time in seconds.
         lua_getglobal(luaState, "update");
