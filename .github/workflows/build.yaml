@@ -32,9 +32,9 @@ jobs:
       working-directory: proj/
       run: xcodebuild -configuration ${{matrix.conf}} -project lib.xcodeproj
 
-    - name: Build With Xcode
+    - name: Build Engine
       working-directory: proj/
-      run: xcodebuild -scheme engine -configuration ${{matrix.conf}} -workspace engine.xcworkspace build
+      run: xcodebuild -configuration ${{matrix.conf}} -project engine.xcodeproj
   
   linux:
     strategy:
