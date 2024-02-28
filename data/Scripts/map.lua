@@ -1,8 +1,7 @@
 textures = {
     gfx.load_texture("Tiles/tile_0000.png"),
     gfx.load_texture("Tiles/tile_0001.png"),
-    gfx.load_texture("Tiles/tile_0002.png"),
-    -- gfx.load_texture("Tiles/tile0000.png"),
+    gfx.load_texture("Tiles/tile_0002.png")
 }
 
 width = 30;
