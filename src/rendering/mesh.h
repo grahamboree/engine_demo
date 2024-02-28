@@ -20,7 +20,5 @@ public:
 
 	std::vector<VertexData> vertexData;
 
-	void GenerateUVs();
-
 	static Mesh DefaultQuad();
 };
