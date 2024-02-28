@@ -28,6 +28,8 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
+#include <unordered_dense.h>
+
 #include "util/logging.h"
 
 constexpr float PI = 3.1415926545f;

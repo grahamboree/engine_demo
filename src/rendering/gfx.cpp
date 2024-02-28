@@ -1,7 +1,5 @@
 #include "gfx.h"
 
-#include <unordered_map>
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -10,7 +8,7 @@
 #include "mesh.h"
 
 namespace {
-    std::unordered_map<std::string, TextureHandle> textureHandles;
+ankerl::unordered_dense::map<std::string, TextureHandle> textureHandles;
 
 void LogShaderCompileErrors(unsigned int shaderID) {
     int success;
