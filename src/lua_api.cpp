@@ -7,10 +7,9 @@
 #include "entity.h"
 #include "input.h"
 
-extern Input input;
-extern lua_State* luaState;
+#include "engine.h"
 
-extern EntityState entities;
+extern EngineState engine;
 
 namespace {
 extern "C" {
@@ -31,8 +30,8 @@ extern "C" {
     }
 
     int l_create_entity(lua_State *L) {
-        const EntityID entity = entities.CreateEntity();
-        entities.drawInfo[entity] = DrawData::Default;
+        const EntityID entity = engine.entities.CreateEntity();
+        engine.entities.drawInfo[entity] = DrawData::Default;
         lua_pushnumber(L, entity);
         return 1;
     }
@@ -44,7 +43,7 @@ extern "C" {
             luaL_error(L, "Invalid Entity ID.");
         }
 
-        const glm::vec2 pos = entities.positions[entity];
+        const glm::vec2 pos = engine.entities.positions[entity];
         lua_newtable(L);
 
         lua_pushstring(L, "x");
@@ -67,22 +66,22 @@ extern "C" {
         lua_getfield(L, 2, "y");
         float y = static_cast<float>(lua_tonumber(L, -1));
 
-        float z = entities.positions[entity].z;
-        entities.positions[entity] = {x, y, z};
+        float z = engine.entities.positions[entity].z;
+        engine.entities.positions[entity] = {x, y, z};
 
         return 0;
     }
 
     int l_set_zpos(lua_State *L) {
         const EntityID entity = static_cast<EntityID>(lua_tonumber(L, 1));
-        entities.positions[entity].z = static_cast<float>(lua_tonumber(L, 2));
+        engine.entities.positions[entity].z = static_cast<float>(lua_tonumber(L, 2));
         return 0;
     }
 
     int l_get_scale(lua_State *L) {
         const EntityID entity = static_cast<EntityID>(lua_tonumber(L, 1));
 
-        const glm::vec2 scale = entities.scales[entity];
+        const glm::vec2 scale = engine.entities.scales[entity];
         lua_newtable(L);
 
         lua_pushstring(L, "x");
@@ -105,7 +104,7 @@ extern "C" {
         lua_getfield(L, 2, "y");
         float y = static_cast<float>(lua_tonumber(L, -1));
 
-        entities.scales[entity] = {x, y};
+        engine.entities.scales[entity] = {x, y};
 
         return 0;
     }
@@ -113,7 +112,7 @@ extern "C" {
     int l_get_pivot(lua_State *L) {
         const EntityID entity = static_cast<EntityID>(lua_tonumber(L, 1));
 
-        glm::vec2 pivot = entities.pivots[entity];
+        glm::vec2 pivot = engine.entities.pivots[entity];
         lua_newtable(L);
 
         lua_pushstring(L, "x");
@@ -136,7 +135,7 @@ extern "C" {
         lua_getfield(L, 2, "y");
         float y = static_cast<float>(lua_tonumber(L, -1));
 
-        entities.pivots[entity] = {x, y};
+        engine.entities.pivots[entity] = {x, y};
 
         return 0;
     }
@@ -144,13 +143,13 @@ extern "C" {
     int l_set_texture(lua_State *L) {
         const EntityID entity = static_cast<EntityID>(lua_tonumber(L, 1));
         const TextureHandle texture = static_cast<TextureHandle>(lua_tonumber(L, 2));
-        entities.drawInfo[entity].texture = texture;
+        engine.entities.drawInfo[entity].texture = texture;
         return 0;
     }
 
     int l_add_to_drawlist(lua_State *L) {
         const EntityID entity = static_cast<EntityID>(lua_tonumber(L, 1));
-        entities.drawList.push_back(entity);
+        engine.entities.drawList.push_back(entity);
         return 0;
     }
 
@@ -160,12 +159,12 @@ extern "C" {
         std::transform(key.begin(), key.end(), key.begin(), [](unsigned char c){ return std::tolower(c); });
 
         bool result = false;
-        if (key == "up") { result = input.up; }
-        else if (key == "down") { result = input.down; }
-        else if (key == "left") { result = input.left; }
-        else if (key == "right") { result = input.right; }
-        else if (key == "mouseleft") { result = input.mouseLeft; }
-        else if (key == "mouseright") { result = input.mouseRight; }
+        if (key == "up") { result = engine.input.up; }
+        else if (key == "down") { result = engine.input.down; }
+        else if (key == "left") { result = engine.input.left; }
+        else if (key == "right") { result = engine.input.right; }
+        else if (key == "mouseleft") { result = engine.input.mouseLeft; }
+        else if (key == "mouseright") { result = engine.input.mouseRight; }
         else { luaL_error(L, "Key '%s' not found."); }
 
         lua_pushboolean(L, result);
@@ -221,40 +220,40 @@ lua_State* InitLua() {
 
 void lua_check(int result) {
     if (result == LUA_ERRSYNTAX) { // syntax error
-        log(LogCategory::LUA, "Syntax error: %s\n", lua_tostring(luaState, -1));
-        lua_pop(luaState, 1);
+        log(LogCategory::LUA, "Syntax error: %s\n", lua_tostring(engine.luaState, -1));
+        lua_pop(engine.luaState, 1);
     } else if (result == LUA_ERRMEM) { // memory allocation error
-        log(LogCategory::LUA, "Memory allocation error: %s\n", lua_tostring(luaState, -1));
-        lua_pop(luaState, 1);
+        log(LogCategory::LUA, "Memory allocation error: %s\n", lua_tostring(engine.luaState, -1));
+        lua_pop(engine.luaState, 1);
     } else if (result == LUA_ERRFILE) { // file read error
-        log(LogCategory::LUA, "File reading error: %s\n", lua_tostring(luaState, -1));
-        lua_pop(luaState, 1);
+        log(LogCategory::LUA, "File reading error: %s\n", lua_tostring(engine.luaState, -1));
+        lua_pop(engine.luaState, 1);
     } else if (result) {
-        log(LogCategory::LUA, "Error: %s\n", lua_tostring(luaState, -1));
-        lua_pop(luaState, 1);
+        log(LogCategory::LUA, "Error: %s\n", lua_tostring(engine.luaState, -1));
+        lua_pop(engine.luaState, 1);
     }
 }
 
 void dump_stack() {
-    int top = lua_gettop(luaState);
+    int top = lua_gettop(engine.luaState);
     for (int i = 1; i <= top; i++) {  /* repeat for each level */
-        const int type = lua_type(luaState, i);
+        const int type = lua_type(engine.luaState, i);
 
         switch (type) {
         case LUA_TSTRING:  /* strings */
-            printf("`%s'", lua_tostring(luaState, i));
+            printf("`%s'", lua_tostring(engine.luaState, i));
             break;
 
         case LUA_TBOOLEAN:  /* booleans */
-            printf(lua_toboolean(luaState, i) ? "true" : "false");
+            printf(lua_toboolean(engine.luaState, i) ? "true" : "false");
             break;
 
         case LUA_TNUMBER:  /* numbers */
-            printf("%g", lua_tonumber(luaState, i));
+            printf("%g", lua_tonumber(engine.luaState, i));
             break;
 
         default:  /* other values */
-            printf("%s", lua_typename(luaState, type));
+            printf("%s", lua_typename(engine.luaState, type));
             break;
         }
         printf("  ");
