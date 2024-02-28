@@ -1,11 +1,15 @@
 require "map"
 
+log("creating player")
 player_speed = 10
 player = create_entity()
 set_texture(player, gfx.load_texture("Sprites/player.png"))
 gfx.add_to_drawlist(player)
+set_zpos(player, 1) -- above tile map
 
--- create_map()
+log("created player")
+
+create_map()
 
 function update(dt)
     -- get the input direction.
