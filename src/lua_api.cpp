@@ -173,6 +173,50 @@ extern "C" {
         return 1;
     }
 }
+
+void lua_check(lua_State* L, int result) {
+    if (result == LUA_ERRSYNTAX) { // syntax error
+        log(LogCategory::LUA, "Syntax error: %s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);
+    } else if (result == LUA_ERRMEM) { // memory allocation error
+        log(LogCategory::LUA, "Memory allocation error: %s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);
+    } else if (result == LUA_ERRFILE) { // file read error
+        log(LogCategory::LUA, "File reading error: %s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);
+    } else if (result) {
+        log(LogCategory::LUA, "Error: %s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);
+    }
+}
+
+// Dump the lua stack (for debugging lua interop)
+void DumpStack(lua_State* L) {
+    int top = lua_gettop(L);
+    for (int i = 1; i <= top; i++) {  /* repeat for each level */
+        const int type = lua_type(L, i);
+
+        switch (type) {
+        case LUA_TSTRING:  /* strings */
+            printf("`%s'", lua_tostring(L, i));
+            break;
+
+        case LUA_TBOOLEAN:  /* booleans */
+            printf(lua_toboolean(L, i) ? "true" : "false");
+            break;
+
+        case LUA_TNUMBER:  /* numbers */
+            printf("%g", lua_tonumber(L, i));
+            break;
+
+        default:  /* other values */
+            printf("%s", lua_typename(L, type));
+            break;
+        }
+        printf("  ");
+    }
+    printf("\n");
+}
 }
 
 void LuaRuntime::Init() {
@@ -222,56 +266,13 @@ void LuaRuntime::Shutdown() {
     lua_close(L);
 }
 
-void LuaRuntime::lua_check(int result) {
-    if (result == LUA_ERRSYNTAX) { // syntax error
-        log(LogCategory::LUA, "Syntax error: %s\n", lua_tostring(L, -1));
-        lua_pop(L, 1);
-    } else if (result == LUA_ERRMEM) { // memory allocation error
-        log(LogCategory::LUA, "Memory allocation error: %s\n", lua_tostring(L, -1));
-        lua_pop(L, 1);
-    } else if (result == LUA_ERRFILE) { // file read error
-        log(LogCategory::LUA, "File reading error: %s\n", lua_tostring(L, -1));
-        lua_pop(L, 1);
-    } else if (result) {
-        log(LogCategory::LUA, "Error: %s\n", lua_tostring(L, -1));
-        lua_pop(L, 1);
-    }
-}
-
-void LuaRuntime::dump_stack() {
-    int top = lua_gettop(L);
-    for (int i = 1; i <= top; i++) {  /* repeat for each level */
-        const int type = lua_type(L, i);
-
-        switch (type) {
-        case LUA_TSTRING:  /* strings */
-            printf("`%s'", lua_tostring(L, i));
-            break;
-
-        case LUA_TBOOLEAN:  /* booleans */
-            printf(lua_toboolean(L, i) ? "true" : "false");
-            break;
-
-        case LUA_TNUMBER:  /* numbers */
-            printf("%g", lua_tonumber(L, i));
-            break;
-
-        default:  /* other values */
-            printf("%s", lua_typename(L, type));
-            break;
-        }
-        printf("  ");
-    }
-    printf("\n");
-}
-
-void LuaRuntime::call_update(float dt) {
+void LuaRuntime::CallUpdate(float dt) {
     // Call lua update, passing the delta time in seconds.
     lua_getglobal(L, "update");
     lua_pushnumber(L, dt);
-    lua_check(lua_pcall(L, 1, 0, 0));
+    lua_check(L, lua_pcall(L, 1, 0, 0));
 }
 
-void LuaRuntime::run_file(const char* path) {
-    lua_check(luaL_dofile(L, path));
+void LuaRuntime::RunFile(const char* path) {
+    lua_check(L, luaL_dofile(L, path));
 }

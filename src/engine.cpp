@@ -28,7 +28,7 @@ bool EngineState::UpdateAndRender()
         input.ReadInput();
         
         // Call lua update, passing the delta time in seconds.
-        lua.call_update(std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime).count());
+        lua.CallUpdate(std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime).count());
 
         // Compute MVP matricesv
         for (const auto& entity : entities.drawList) {
@@ -88,7 +88,7 @@ void EngineState::Init() {
     DrawData::Default.program = LoadProgram(DATA_PATH "Shaders/vert.glsl", DATA_PATH "Shaders/frag.glsl");
 
     // Run lua setup
-    lua.run_file(DATA_PATH "Scripts/luamain.lua");
+    lua.RunFile(DATA_PATH "Scripts/luamain.lua");
 
     gameStartTime = lastFrameStart = std::chrono::high_resolution_clock::now();
 }

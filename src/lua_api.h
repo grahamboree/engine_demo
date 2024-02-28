@@ -9,13 +9,6 @@ struct LuaRuntime {
     void Init();
     void Shutdown();
 
-    // Check for and report errors in lua execution
-    void lua_check(int result);
-    
-    // Dump the lua stack (for debugging lua interop)
-    void dump_stack();
-
-    void call_update(float dt);
-
-    void run_file(const char* path);
+    void CallUpdate(float dt);
+    void RunFile(const char* path);
 };
