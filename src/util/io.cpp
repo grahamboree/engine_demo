@@ -4,39 +4,39 @@
 
 char* IO::ReadFile(const char* path) {
 #if _WIN32
-    FILE* vert;
-    if (fopen_s(&vert, path, "rb")) {
-        vert = nullptr;
+    FILE* file;
+    if (fopen_s(&file, path, "rb")) {
+        file = nullptr;
     }
 #else
-    FILE* vert = fopen(path, "rb");
+    FILE* file = fopen(path, "rb");
 #endif
     
-    if (!vert) {
+    if (!file) {
         return nullptr;
     }
 
-    if (fseek(vert, 0, SEEK_END) != 0) {
-        fclose(vert);
+    if (fseek(file, 0, SEEK_END) != 0) {
+        fclose(file);
         return nullptr;
     }
 
-    const auto bufSize = ftell(vert);
+    const auto bufSize = ftell(file);
     if (bufSize < 0) {
-        fclose(vert);
+        fclose(file);
         return nullptr;
     }
 
     char* buf = new char[bufSize + 1];
 
-    if (fseek(vert, 0, SEEK_SET) != 0) {
-        fclose(vert);
+    if (fseek(file, 0, SEEK_SET) != 0) {
+        fclose(file);
         delete[] buf;
         return nullptr;
     }
 
-    const size_t readLen = fread(buf, 1, bufSize, vert);
-    fclose(vert);
+    const size_t readLen = fread(buf, 1, bufSize, file);
+    fclose(file);
 
     if (readLen != bufSize) {
         delete[] buf;
