@@ -2,7 +2,7 @@
 
 struct Camera;
 struct Stats;
-struct RendererState;
+struct Renderer;
 
 struct UIState
 {
@@ -10,6 +10,6 @@ struct UIState
     bool showConsoleWindow = true;
     bool showImguiDemoWindow = false;
 
-    void Init(const RendererState& renderer);
-    void UpdateAndRender(const RendererState& renderer, const Stats& stats, const Camera& camera);
+    void Init(const Renderer& renderer);
+    void UpdateAndRender(const Renderer& renderer, const Stats& stats, const Camera& camera);
 };

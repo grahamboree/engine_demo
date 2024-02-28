@@ -126,7 +126,7 @@ uint32_t UploadMesh(const Mesh& mesh) {
     return vao;
 }
 
-void InitRendering(RendererState& state, int windowWidth, int windowHeight, int& viewportWidth, int& viewportHeight) {
+void InitRendering(Renderer& state, int windowWidth, int windowHeight, int& viewportWidth, int& viewportHeight) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         fprintf(stderr, "Could not initialize SDL.\nError: %s\n", SDL_GetError());
         exit(1);

@@ -4,7 +4,7 @@
 
 class Mesh;
 
-struct RendererState {
+struct Renderer {
     SDL_Window* window;
     uint32_t mainWindowID;
     SDL_Renderer* renderer;
@@ -14,7 +14,7 @@ struct RendererState {
 void glCheckErrors();
 
 // Init
-void InitRendering(RendererState& state, int windowWidth, int windowHeight, int& viewportWidth, int& viewportHeight);
+void InitRendering(Renderer& state, int windowWidth, int windowHeight, int& viewportWidth, int& viewportHeight);
 void InitFramebuffers(uint32_t* framebuffers, uint32_t* framebufferTextures, int viewportWidth, int viewportHeight);
 uint32_t InitFullscreenQuad();
 

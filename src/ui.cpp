@@ -5,7 +5,7 @@
 #include "rendering/gfx.h"
 #include "rendering/camera.h"
 
-void UIState::Init(const RendererState& renderer) {
+void UIState::Init(const Renderer& renderer) {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -35,7 +35,7 @@ void UIState::Init(const RendererState& renderer) {
     ImGui_ImplOpenGL3_Init("#version 150");
 }
 
-void UIState::UpdateAndRender(const RendererState& renderer, const Stats& stats, const Camera& camera) {
+void UIState::UpdateAndRender(const Renderer& renderer, const Stats& stats, const Camera& camera) {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame(renderer.window);
     ImGui::NewFrame();
