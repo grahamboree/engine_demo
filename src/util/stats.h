@@ -12,12 +12,7 @@ struct Stats {
     float updateTimesMillis[FRAME_TIME_HISTORY_SIZE];
     float renderTimesMillis[FRAME_TIME_HISTORY_SIZE];
 
-    Stats() {
-        memset(frameTimesMillis, 0, sizeof(float) * FRAME_TIME_HISTORY_SIZE);
-        memset(updateTimesMillis, 0, sizeof(float) * FRAME_TIME_HISTORY_SIZE);
-        memset(renderTimesMillis, 0, sizeof(float) * FRAME_TIME_HISTORY_SIZE);
-    }
-
+    Stats();
     void RecordFrameTime(floatMillis frameTime);
     void RecordUpdateTime(floatMillis updateTime);
     void RecordRenderTime(floatMillis renderTime);
