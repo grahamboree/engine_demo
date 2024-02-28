@@ -75,16 +75,15 @@ bool EngineState::UpdateAndRender()
 }
 
 void EngineState::Init() {
-    // Init subsystems
     InitRendering(renderer, windowWidth, windowHeight, camera.viewportWidth, camera.viewportHeight);
-
-    ui.Init(renderer);
-    luaState = InitLua();
 
     // Create a camera
     camera.pos = {0, 0, 10};
     camera.euler = {0, 0};
-    camera.SetOrtho(40);
+    camera.SetOrtho(40); // 40 units wide
+
+    ui.Init(renderer);
+    luaState = InitLua();
 
     // Load the default entity draw data.
     const Mesh defaultQuad = Mesh::DefaultQuad();
