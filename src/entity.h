@@ -24,7 +24,7 @@ struct EntityState
 	
 	// Transform
 	std::array<EntityID, MAX_ENTITY_COUNT> parent {}; // Hierarchy
-	std::array<glm::vec2, MAX_ENTITY_COUNT> positions {};
+	std::array<glm::vec3, MAX_ENTITY_COUNT> positions {};
 	std::array<float, MAX_ENTITY_COUNT> rotations {};
 	std::array<glm::vec2, MAX_ENTITY_COUNT> scales {};
 	std::array<glm::vec2, MAX_ENTITY_COUNT> pivots {};

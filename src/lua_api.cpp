@@ -67,7 +67,8 @@ extern "C" {
         lua_getfield(L, 2, "y");
         float y = static_cast<float>(lua_tonumber(L, -1));
 
-        entities.positions[entity] = {x, y};
+        float z = entities.positions[entity].z;
+        entities.positions[entity] = {x, y, z};
 
         return 0;
     }
