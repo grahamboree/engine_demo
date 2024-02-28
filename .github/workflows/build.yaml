@@ -104,4 +104,4 @@ jobs:
 
     - name: Build
       working-directory: proj/
-      run: msbuild engine.vcxproj -property:Configuration=${{matrix.conf}}
+      run: msbuild engine.sln -property:Configuration=${{matrix.conf}}
