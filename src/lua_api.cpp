@@ -73,6 +73,12 @@ extern "C" {
         return 0;
     }
 
+    int l_set_zpos(lua_State *L) {
+        const EntityID entity = static_cast<EntityID>(lua_tonumber(L, 1));
+        entities.positions[entity].z = static_cast<float>(lua_tonumber(L, 2));
+        return 0;
+    }
+
     int l_get_scale(lua_State *L) {
         const EntityID entity = static_cast<EntityID>(lua_tonumber(L, 1));
 
@@ -188,6 +194,7 @@ lua_State* InitLua() {
     REGISTER_LUA_FUNC(create_entity)
     REGISTER_LUA_FUNC(get_pos)
     REGISTER_LUA_FUNC(set_pos)
+    REGISTER_LUA_FUNC(set_zpos)
     REGISTER_LUA_FUNC(get_scale)
     REGISTER_LUA_FUNC(set_scale)
     REGISTER_LUA_FUNC(get_pivot)
