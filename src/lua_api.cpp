@@ -1,5 +1,7 @@
 #include "lua_api.h"
 
+#include "lua/lua.hpp"
+
 #include <algorithm>
 
 #include "util/logging.h"
@@ -173,8 +175,8 @@ extern "C" {
 }
 }
 
-lua_State* InitLua() {
-    lua_State* L = luaL_newstate();
+void LuaRuntime::Init() {
+    L = luaL_newstate();
     luaL_openlibs(L); // Load standard libs
 
     // Set the lua search path to include the data/Scripts directory
@@ -199,64 +201,77 @@ lua_State* InitLua() {
     REGISTER_LUA_FUNC(get_pivot)
     REGISTER_LUA_FUNC(set_pivot)
     REGISTER_LUA_FUNC(set_texture)
-
-    // REGISTER_LUA_FUNC(add_to_drawlist)
 #undef REGISTER_LUA_FUNC
     
+#define REGISTER_LUA_METHOD(method) lua_pushcfunction(L, l_##method); lua_setfield(L, -2, #method);
+    // gfx
     lua_newtable(L);
-    lua_pushcfunction(L, l_load_texture);
-    lua_setfield(L, -2, "load_texture");
-    lua_pushcfunction(L, l_add_to_drawlist);
-    lua_setfield(L, -2, "add_to_drawlist");
+    REGISTER_LUA_METHOD(load_texture)
+    REGISTER_LUA_METHOD(add_to_drawlist)
     lua_setglobal(L, "gfx");
 
+    // io
     lua_newtable(L);
-    lua_pushcfunction(L, l_get_key);
-    lua_setfield(L, -2, "get_key");
+    REGISTER_LUA_METHOD(get_key)
     lua_setglobal(L, "io");
-
-    return L;
+#undef REGISTER_LUA_METHOD
 }
 
-void lua_check(int result) {
+void LuaRuntime::Shutdown() {
+    // Release the Lua enviroment
+    lua_close(L);
+}
+
+void LuaRuntime::lua_check(int result) {
     if (result == LUA_ERRSYNTAX) { // syntax error
-        log(LogCategory::LUA, "Syntax error: %s\n", lua_tostring(engine.luaState, -1));
-        lua_pop(engine.luaState, 1);
+        log(LogCategory::LUA, "Syntax error: %s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);
     } else if (result == LUA_ERRMEM) { // memory allocation error
-        log(LogCategory::LUA, "Memory allocation error: %s\n", lua_tostring(engine.luaState, -1));
-        lua_pop(engine.luaState, 1);
+        log(LogCategory::LUA, "Memory allocation error: %s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);
     } else if (result == LUA_ERRFILE) { // file read error
-        log(LogCategory::LUA, "File reading error: %s\n", lua_tostring(engine.luaState, -1));
-        lua_pop(engine.luaState, 1);
+        log(LogCategory::LUA, "File reading error: %s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);
     } else if (result) {
-        log(LogCategory::LUA, "Error: %s\n", lua_tostring(engine.luaState, -1));
-        lua_pop(engine.luaState, 1);
+        log(LogCategory::LUA, "Error: %s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);
     }
 }
 
-void dump_stack() {
-    int top = lua_gettop(engine.luaState);
+void LuaRuntime::dump_stack() {
+    int top = lua_gettop(L);
     for (int i = 1; i <= top; i++) {  /* repeat for each level */
-        const int type = lua_type(engine.luaState, i);
+        const int type = lua_type(L, i);
 
         switch (type) {
         case LUA_TSTRING:  /* strings */
-            printf("`%s'", lua_tostring(engine.luaState, i));
+            printf("`%s'", lua_tostring(L, i));
             break;
 
         case LUA_TBOOLEAN:  /* booleans */
-            printf(lua_toboolean(engine.luaState, i) ? "true" : "false");
+            printf(lua_toboolean(L, i) ? "true" : "false");
             break;
 
         case LUA_TNUMBER:  /* numbers */
-            printf("%g", lua_tonumber(engine.luaState, i));
+            printf("%g", lua_tonumber(L, i));
             break;
 
         default:  /* other values */
-            printf("%s", lua_typename(engine.luaState, type));
+            printf("%s", lua_typename(L, type));
             break;
         }
         printf("  ");
     }
     printf("\n");
+}
+
+void LuaRuntime::call_update(float dt) {
+    // Call lua update, passing the delta time in seconds.
+    lua_getglobal(L, "update");
+    lua_pushnumber(L, dt);
+    lua_check(lua_pcall(L, 1, 0, 0));
+}
+
+void LuaRuntime::run_file(const char* path) {
+    lua_check(luaL_dofile(L, path));
 }

@@ -28,9 +28,7 @@ bool EngineState::UpdateAndRender()
         input.ReadInput();
         
         // Call lua update, passing the delta time in seconds.
-        lua_getglobal(luaState, "update");
-        lua_pushnumber(luaState, std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime).count());
-        lua_check(lua_pcall(luaState, 1, 0, 0));
+        lua.call_update(std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime).count());
 
         // Compute MVP matricesv
         for (const auto& entity : entities.drawList) {
@@ -80,7 +78,7 @@ void EngineState::Init() {
     camera.SetOrtho(40); // 40 units wide
 
     ui.Init(renderer);
-    luaState = InitLua();
+    lua.Init();
 
     // Load the default entity draw data.
     const Mesh defaultQuad = Mesh::DefaultQuad();
@@ -90,7 +88,7 @@ void EngineState::Init() {
     DrawData::Default.program = LoadProgram(DATA_PATH "Shaders/vert.glsl", DATA_PATH "Shaders/frag.glsl");
 
     // Run lua setup
-    lua_check(luaL_dofile(luaState, DATA_PATH "Scripts/luamain.lua"));
+    lua.run_file(DATA_PATH "Scripts/luamain.lua");
 
     gameStartTime = lastFrameStart = std::chrono::high_resolution_clock::now();
 }
@@ -102,8 +100,7 @@ void EngineState::Shutdown() {
     ImPlot::DestroyContext();
     ImGui::DestroyContext();
 
-    // Release the Lua enviroment
-    lua_close(luaState);
+    lua.Shutdown();
 
     // Destroy the SDL context and quit
     SDL_GL_DeleteContext(renderer.glContext);

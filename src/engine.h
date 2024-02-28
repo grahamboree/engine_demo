@@ -23,7 +23,7 @@ struct EngineState {
     Stats stats;
     Input input;
     Camera camera;
-    lua_State* luaState;
+    LuaRuntime lua;
     Renderer renderer;
     EntityState entities;
     UIState ui;
